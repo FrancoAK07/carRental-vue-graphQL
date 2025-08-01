@@ -21,6 +21,7 @@ export const typeDefs = `#graphql
   type Booking {
     _id: ID!
     country: String
+    phone: String
     carImg: String
     carBrand: String
     carModel: String
@@ -45,9 +46,9 @@ export const typeDefs = `#graphql
     pickupDate: String
     returnDate: String
     year: Int
-    pricePerday: Int
+    pricePerDay: Int
+    Gearshift: String
     Passengers: Int
-    GearShift: String
     Type: String
 
   }
@@ -70,6 +71,7 @@ export const typeDefs = `#graphql
 
   input BookingInput {
     country: String
+    phone: String
     carImg: String
     carBrand: String
     carModel: String
@@ -90,9 +92,9 @@ export const typeDefs = `#graphql
     firstName: String!
     lastName: String!
     email: String!
-    password: String
+    password: String!
     registered: Boolean!
-    bookings: [BookingInput] = []
+    bookings: [BookingInput!] = []
   }
 
 
@@ -108,7 +110,7 @@ export const typeDefs = `#graphql
   type Mutation {
     createBooking(booking: BookingInput!, email: String!): Booking
     createUser(user: UserInput!): User
-    loginUser(user: UserInput!): User
+    loginUser(email: String!, password: String!): User
     deleteBooking(userEmail: String!, bookingId: ID!): String
   }
 `;

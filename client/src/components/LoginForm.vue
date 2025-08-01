@@ -23,8 +23,9 @@
 
 <script setup>
 	import { ref, onMounted, watch } from "vue";
-	import axios from "axios";
 	import { useToast } from "vue-toastification";
+	import { useMutation } from "@vue/apollo-composable";
+	import { LOGIN_USER } from "@/api/mutations";
 
 	const createAccountLink = ref(null);
 	const loginForm = ref(null);
@@ -40,6 +41,23 @@
 		emit("createAccountLink", createAccountLink);
 	});
 
+	const { mutate: loginUser, onError, onDone } = useMutation(LOGIN_USER);
+
+	onDone((response) => {
+		user = response.data.loginUser;
+		sessionStorage.setItem("user", JSON.stringify(user));
+		emit("userLogged", user);
+		emit("clickedOut");
+		email.value = "";
+		password.value = "";
+		toast.success("Logged in successfully");
+	});
+
+	onError((error) => {
+		const errorMessage = JSON.parse(JSON.stringify(error));
+		toast.warning(errorMessage.message);
+	});
+
 	window.addEventListener("click", (e) => {
 		if (loginForm.value && props.loginLink) {
 			if (
@@ -53,25 +71,14 @@
 		}
 	});
 
-	//see if credentials are correct
 	const login = async () => {
 		if (!email.value || !password.value) {
 			toast.warning("please fill all fields");
 		} else {
-			const loginUserRes = await axios.post("https://carrental-vue.onrender.com/login", {
-				email: email.value,
-				password: password.value,
-			});
-			if (loginUserRes.data.user) {
-				user = loginUserRes.data.user;
-				sessionStorage.setItem("user", JSON.stringify(user));
-				toast.success(loginUserRes.data.message, { timeout: 1500 });
-				emit("userLogged", user);
-				emit("clickedOut");
-				email.value = "";
-				password.value = "";
-			} else {
-				toast.warning(loginUserRes.data);
+			try {
+				await loginUser({ email: email.value, password: password.value });
+			} catch (error) {
+				console.error(error);
 			}
 		}
 	};

@@ -23,11 +23,11 @@ const carSchema = new Schema(
 		pricePerDay: {
 			type: Number,
 		},
-		Passengers: {
-			type: Number,
-		},
 		Gearshift: {
 			type: String,
+		},
+		Passengers: {
+			type: Number,
 		},
 		Type: {
 			type: String,

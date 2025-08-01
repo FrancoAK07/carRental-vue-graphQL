@@ -40,14 +40,8 @@ const resolvers = {
 			return await createUser(args.user);
 		},
 		loginUser: async (_, args) => {
-			const response = await loginUser(args.user);
-			if (response.errors) {
-				console.log("errors");
-				return response.errors[0].message;
-			} else {
-				console.log("no errors");
-				return response;
-			}
+			const response = await loginUser(args.email, args.password);
+			return response;
 		},
 		deleteBooking: async (_, args) => {
 			return await deleteBooking(args.userEmail, args.bookingId);

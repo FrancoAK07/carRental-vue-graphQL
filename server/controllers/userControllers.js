@@ -3,7 +3,8 @@ import { GraphQLError } from "graphql";
 import bcrypt from "bcrypt";
 
 export const getUser = async (email) => {
-	return await User.findOne({ email: email });
+	const user = await User.findOne({ email: email });
+	return user;
 };
 
 export const getUsers = async () => {
@@ -28,19 +29,25 @@ export const createUser = async (user) => {
 };
 
 export const createBooking = async (booking, email) => {
-	return await User.updateOne({ email: email }, { $push: { bookings: booking } }, { upsert: true });
+	try {
+		const user = await User.findOneAndUpdate({ email: email }, { $push: { bookings: booking } }, { new: true });
+		const newBooking = user.bookings[user.bookings.length - 1];
+		return newBooking;
+	} catch (error) {
+		return new GraphQLError("Error creating booking");
+	}
 };
 
-export const loginUser = async (user) => {
-	const currentUser = await User.findOne({ email: user.email });
+export const loginUser = async (email, password) => {
+	const currentUser = await User.findOne({ email: email });
 	if (!currentUser) {
 		return new GraphQLError("User not found");
 	} else {
-		const comparison = bcrypt.compare(user.password, currentUser.password);
+		const comparison = await bcrypt.compare(password, currentUser.password);
 		if (comparison) {
 			return currentUser;
 		} else {
-			return new GraphQLError("User not found");
+			return new GraphQLError("Wrong password");
 		}
 	}
 };
@@ -50,6 +57,6 @@ export const deleteBooking = async (email, bookingId) => {
 	if (response.modifiedCount) {
 		return "Deleted successfully";
 	} else {
-		return "Error deleting booking";
+		return new GraphQLError("Error deleting booking");
 	}
 };

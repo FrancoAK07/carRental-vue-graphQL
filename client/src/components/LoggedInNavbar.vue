@@ -8,7 +8,10 @@
 		<div class="row position-absolute end-0 me-2 position-relative">
 			<h3 class="user-name ms-auto my-auto text-end" @click="showLogout = !showLogout" ref="userName">{{ user.firstName }}</h3>
 		</div>
-		<div class="logout-btn col position-absolute d-flex justify-content-end bg-dark rounded p-2 end-0" v-if="showLogout" ref="logoutDiv">
+		<div
+			class="logout-btn col position-absolute d-flex justify-content-end bg-dark rounded p-2 end-0"
+			v-if="showLogout"
+			ref="logoutDiv">
 			<button class="btn btn-danger w-100" @click="handleLogout">Logout</button>
 		</div>
 		<div class="hamburger-menu m-auto d-sm-none" ref="hamburgerMenu" @click="hamburgerMenuClicked">
@@ -16,7 +19,10 @@
 			<div class="bar"></div>
 			<div class="bar"></div>
 		</div>
-		<div class="navbar-links row bg-dark position-absolute w-100 m-auto start-0 z-3" ref="hamburgerLinks" v-if="showHamburgerMenu">
+		<div
+			class="navbar-links row bg-dark position-absolute w-100 m-auto start-0 z-3"
+			ref="hamburgerLinks"
+			v-if="showHamburgerMenu">
 			<div class="col-12 p-0">
 				<div class="row p-0 m-auto justify-content-center">
 					<router-link :to="{ path: '/' }" class="text-decoration-none p-0 w-auto">Home</router-link>
@@ -35,7 +41,9 @@
 <script setup>
 	import { ref } from "vue";
 	import { useRouter } from "vue-router";
+	import { useToast } from "vue-toastification";
 
+	const toast = useToast();
 	const props = defineProps(["loggedUser"]);
 	const user = JSON.parse(sessionStorage.getItem("user"));
 	const emit = defineEmits(["logout"]);
@@ -51,6 +59,7 @@
 		emit("logout");
 		sessionStorage.removeItem("user");
 		route.push({ path: "/" });
+		toast("See you soon!");
 	};
 
 	window.addEventListener("click", (e) => {

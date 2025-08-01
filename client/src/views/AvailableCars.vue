@@ -186,6 +186,8 @@
 <script setup>
 	import axios from "axios";
 	import { ref, onMounted } from "vue";
+	import { useQuery } from "@vue/apollo-composable";
+	import { GET_ALL_CARS } from "@/api/queries";
 
 	const priceRef = ref();
 	const gearshiftRef = ref();
@@ -194,17 +196,22 @@
 	let totalPrice;
 	let carsData;
 	const cars = ref();
-	let loading = ref(true);
 	const availableCars = ref();
 
-	onMounted(async () => {
-		carsData = await axios.get("https://carrental-vue.onrender.com/cars").then((carsData) => {
-			cars.value = carsData.data;
+	const { onResult, onError, loading } = useQuery(GET_ALL_CARS);
+
+	onResult((response) => {
+		if (response.data) {
+			carsData = response.data.cars;
+			cars.value = carsData;
 			availableCars.value = cars.value.filter((car) => {
 				return pickupDate > new Date(car.returnDate) || car.returnDate === "";
 			});
-			loading.value = false;
-		});
+		}
+	});
+
+	onError((error) => {
+		console.error(error);
 	});
 
 	//get booking info from sessionStorage
@@ -248,7 +255,7 @@
 			}
 			if (passengersRef.value.value != "" && passengersRef.value.value != "default") {
 				availableCars.value = availableCars.value.filter((car) => {
-					return car.Passengers === passengersRef.value.value;
+					return parseInt(car.Passengers) === parseInt(passengersRef.value.value);
 				});
 			}
 			if (priceRef.value.value != "" && priceRef.value.value != "default") {
@@ -263,7 +270,7 @@
 			}
 			if (passengersRef.value.value != "" && passengersRef.value.value != "default") {
 				availableCars.value = availableCars.value.filter((car) => {
-					return car.Passengers === passengersRef.value.value;
+					return parseInt(car.Passengers) === parseInt(passengersRef.value.value);
 				});
 			}
 			if (priceRef.value.value != "" && priceRef.value.value != "default") {
@@ -285,7 +292,7 @@
 			}
 			if (passengersRef.value.value != "" && passengersRef.value.value != "default") {
 				availableCars.value = availableCars.value.filter((car) => {
-					return car.Passengers === passengersRef.value.value;
+					return parseInt(car.Passengers) === parseInt(passengersRef.value.value);
 				});
 			}
 			if (priceRef.value.value != "" && priceRef.value.value != "default") {
@@ -300,7 +307,7 @@
 			}
 			if (passengersRef.value.value != "" && passengersRef.value.value != "default") {
 				availableCars.value = availableCars.value.filter((car) => {
-					return car.Passengers === passengersRef.value.value;
+					return parseInt(car.Passengers) === parseInt(passengersRef.value.value);
 				});
 			}
 			if (priceRef.value.value != "" && priceRef.value.value != "default") {
@@ -313,7 +320,7 @@
 		if (passengersRef.value.value != "" && passengersRef.value.value != "default") {
 			resetFilter();
 			availableCars.value = availableCars.value.filter((car) => {
-				return car.Passengers === passengersRef.value.value;
+				return parseInt(car.Passengers) === parseInt(passengersRef.value.value);
 			});
 			if (typeRef.value.value != "" && typeRef.value.value != "default") {
 				availableCars.value = availableCars.value.filter((car) => {

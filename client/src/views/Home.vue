@@ -85,43 +85,8 @@
 			</div>
 		</div>
 	</div>
-	<div>
-		<h2>Car List</h2>
-
-		<!-- Display the list of cars -->
-		<ul v-if="result">
-			<li v-for="user in result.users">{{ user.firstName }}</li>
-		</ul>
-	</div>
 </template>
 
 <script setup>
 	import LocationDateTimeForm from "@/components/LocationDate&Time/LocationDateTimeForm.vue";
-	import { useQuery } from "@vue/apollo-composable";
-	import gql from "graphql-tag";
-	import { watch } from "vue";
-
-	const GET_ALL_USERS = gql`
-		query getAllUsers {
-			users {
-				firstName
-				lastName
-			}
-		}
-	`;
-
-	//use onResult to show the result once it has the data
-	const { result, onError, onResult } = useQuery(GET_ALL_USERS);
-
-	onError((error) => {
-		console.log(error);
-	});
-
-	onResult((data) => {
-		console.log(data);
-	});
-
-	watch(result, (updatedResult) => {
-		console.log(updatedResult.users);
-	});
 </script>

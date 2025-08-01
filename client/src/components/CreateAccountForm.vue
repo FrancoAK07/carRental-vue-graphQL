@@ -25,9 +25,11 @@
 </template>
 
 <script setup>
-	import axios from "axios";
-	import { ref, onMounted, onBeforeMount, computed } from "vue";
+	import { ref, onMounted, computed } from "vue";
 	import { useToast } from "vue-toastification";
+	import { useMutation } from "@vue/apollo-composable";
+	import { CREATE_USER } from "@/api/mutations.js";
+
 	const registerForm = ref(null);
 	const signInLink = ref(null);
 	const firstName = defineModel("firstName");
@@ -41,8 +43,18 @@
 		lastName: lastName.value,
 		email: email.value,
 		password: password.value,
-		bookings: [],
+		registered: true,
 	}));
+
+	const { mutate: createUser, onError, onDone } = useMutation(CREATE_USER);
+
+	onDone(() => {
+		toast.success("User created successfully");
+	});
+
+	onError((error) => {
+		console.error("Error creating user:", error);
+	});
 
 	const emit = defineEmits(["login", "signInLink", "closeRegisterForm"]);
 	const props = defineProps(["registerLink", "createAccountLinkRef", "registerHamburger"]);
@@ -76,14 +88,11 @@
 		} else if (password.value.length < 5) {
 			toast.warning("password must be at least 5 characters long", { timeout: 3000 });
 		} else {
-			axios.post("https://carrental-vue.onrender.com/registerUser", { user: user.value }).then((res) => {
-				toast.success(res.data);
-				emit("closeRegisterForm");
-				firstName.value = "";
-				lastName.value = "";
-				email.value = "";
-				password.value = "";
-			});
+			try {
+				await createUser({ user: user.value });
+			} catch (error) {
+				console.log("error creating user", error);
+			}
 		}
 	}
 </script>

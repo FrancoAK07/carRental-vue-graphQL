@@ -43,23 +43,12 @@
 		<div class="border-bottom"></div>
 		<div class="container mt-4">
 			<div class="row justify-content-center">
-				<div class="col-12 col-md-7 px-5 d-flex flex-column mb-3">
+				<div v-if="!user" class="col-12 col-md-7 px-5 d-flex flex-column mb-3">
 					<h2>Enter your info</h2>
 					<div class="row w-100 mx-auto">
 						<div class="col p-1">
 							<label class="fw-bold" for="firstName">First Name</label>
-							<input
-								class="d-block w-100 rounded p-1 border-1"
-								type="text"
-								name="firstName"
-								v-model="firstName"
-								@change="
-									{
-										{
-											userBooking.firstName = firstName;
-										}
-									}
-								" />
+							<input class="d-block w-100 rounded p-1 border-1" type="text" name="firstName" v-model="firstName" />
 						</div>
 						<div class="col p-1">
 							<label class="fw-bold" for="lastName">Last Name</label>
@@ -70,6 +59,10 @@
 						<div class="col p-1">
 							<label class="fw-bold" for="email">Email</label>
 							<input class="d-block w-100 rounded p-1 border-1" type="text" name="Email" v-model="email" />
+						</div>
+						<div class="col p-1">
+							<label class="fw-bold" for="password">Password</label>
+							<input class="d-block w-100 rounded p-1 border-1" type="text" name="Password" v-model="password" />
 						</div>
 					</div>
 					<div class="row w-100 mx-auto">
@@ -83,7 +76,46 @@
 								@change="
 									{
 										{
-											userBooking.bookings.country = country;
+											userBooking.booking.country = country;
+										}
+									}
+								">
+								<option value="venezuela">Venezuela</option>
+								<option value="USA">USA</option>
+								<option value="italy">Italy</option>
+							</select>
+						</div>
+						<div class="col p-1">
+							<label class="fw-bold" for="number">Phone Number</label>
+							<input
+								class="d-block w-100 rounded p-1 border-1"
+								type="text"
+								name="number"
+								v-model="phone"
+								@change="
+									{
+										{
+											userBooking.phone = phone;
+										}
+									}
+								" />
+						</div>
+					</div>
+				</div>
+				<div v-else class="col-12 col-md-7 px-5 d-flex flex-column mb-3">
+					<h2>Enter your info</h2>
+					<div class="row w-100 mx-auto">
+						<div class="col-4 p-1">
+							<label class="fw-bold" for="number">Country</label>
+							<select
+								class="d-block w-100 rounded p-1"
+								name="country"
+								id="country"
+								ref="country"
+								@change="
+									{
+										{
+											userBooking.booking.country = country;
 										}
 									}
 								">
@@ -163,14 +195,17 @@
 </template>
 
 <script setup>
-	import { ref, onMounted, computed } from "vue";
-	import axios from "axios";
+	import { ref, computed } from "vue";
 	import { useRouter } from "vue-router";
 	import { useToast } from "vue-toastification";
+	import { useMutation, useLazyQuery } from "@vue/apollo-composable";
+	import { CREATE_BOOKING, CREATE_USER } from "@/api/mutations";
+	import { GET_USER, GET_USER_BOOKINGS } from "@/api/queries";
 
 	//get booking info from sessionStorage
 	const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo"));
 	//--
+	let user = JSON.parse(sessionStorage.getItem("user"));
 	const router = useRouter();
 	const toast = useToast();
 	const pickupDate = new Date(bookingInfo.pickupDate);
@@ -187,12 +222,48 @@
 	let firstName = defineModel("firstName");
 	let lastName = defineModel("lastName");
 	let email = defineModel("email");
+	let password = defineModel("password");
 	let country = ref();
 	let phone = defineModel("phone");
+	const newUser = ref();
 
-	let nonRegisteredUsers;
+	const { load: getUser } = useLazyQuery();
 
-	nonRegisteredUsers = await axios.get("https://carrental-vue.onrender.com/getUnregisteredUsers");
+	const { mutate: createBooking } = useMutation(CREATE_BOOKING, {
+		update(cache, { data }) {
+			const newBooking = data.createBooking;
+			const userData = cache.readQuery({ query: GET_USER, variables: { email: user.email } });
+			if (userData) {
+				cache.writeQuery({
+					query: GET_USER,
+					variables: { email: user.email },
+					data: {
+						user: {
+							...userData.user,
+							bookings: [...userData.user.bookings, newBooking],
+						},
+					},
+				});
+			}
+		},
+	});
+
+	const { mutate: createUser } = useMutation(CREATE_USER, {
+		update(cache, { data }) {
+			const newUser = data.createUser;
+			if (newUser) {
+				cache.writeQuery({
+					query: GET_USER,
+					variables: { email: email.value },
+					data: {
+						user: {
+							...newUser,
+						},
+					},
+				});
+			}
+		},
+	});
 
 	window.addEventListener("click", (e) => {
 		if (details.value) {
@@ -215,56 +286,59 @@
 	}
 
 	let userBooking = computed(() => ({
-		firstName: firstName.value,
-		lastName: lastName.value,
-		email: email.value,
-		phone: phone.value,
-		bookings: [
-			{
-				country: country.value.value,
-				carImg: bookingInfo.car.img,
-				carBrand: bookingInfo.car.brand,
-				carModel: bookingInfo.car.model,
-				pickupLocation: bookingInfo.pickupLocation,
-				returnLocation: bookingInfo.returnLocation,
-				pickupDate: lastPickupDate.replace("04:00:00", "").trim(),
-				returnDate: lastReturnDate.replace("04:00:00", "").trim(),
-				pickupTime: pickupTime,
-				returnTime: returnTime,
-				rentalDays: differenceInDays,
-				pricePerDay: bookingInfo.car.pricePerDay,
-				totalPrice: bookingInfo.totalPrice,
-				totalPlusAddons: bookingInfo.totalPlusAddons,
-				addons: bookingInfo.selectedAddons,
-			},
-		],
+		booking: {
+			country: country.value.value,
+			phone: phone.value,
+			carImg: bookingInfo.car.img,
+			carBrand: bookingInfo.car.brand,
+			carModel: bookingInfo.car.model,
+			pickupLocation: bookingInfo.pickupLocation,
+			returnLocation: bookingInfo.returnLocation,
+			pickupDate: lastPickupDate.replace("04:00:00", "").trim(),
+			returnDate: lastReturnDate.replace("04:00:00", "").trim(),
+			pickupTime: pickupTime,
+			returnTime: returnTime,
+			rentalDays: differenceInDays,
+			pricePerDay: bookingInfo.car.pricePerDay,
+			totalPrice: bookingInfo.totalPrice,
+			totalPlusAddons: bookingInfo.totalPlusAddons,
+			addons: bookingInfo.selectedAddons,
+		},
 	}));
 
-	function saveBooking() {
-		if (!firstName.value || !lastName.value || !email.value || !phone.value || !country.value.value) {
-			alert("please fill all fields");
-		} else {
-			if (userBooking.value.bookings[0].returnLocation === "") {
-				userBooking.value.bookings[0].returnLocation = userBooking.value.bookings[0].pickupLocation;
-			}
-			for (let client of nonRegisteredUsers.data) {
-				if (client.email === email.value) {
-					axios
-						.post("https://carrental-vue.onrender.com/booking", {
-							booking: userBooking.value.bookings[0],
-							email: email.value,
-						})
-						.then((res) => {
-							toast(res.data);
-							router.push({ path: "/" });
-						});
-					return;
+	async function saveBooking() {
+		const response = await getUser(GET_USER, { email: user?.email || email.value });
+		if (response.user) {
+			user = response.user;
+		}
+		if (!user) {
+			newUser.value = {
+				firstName: firstName.value,
+				lastName: lastName.value,
+				email: email.value,
+				password: password.value,
+				registered: false,
+				bookings: [userBooking.value.booking],
+			};
+			if (!Object.values(newUser.value).some((value) => value === undefined)) {
+				try {
+					await createUser({ user: newUser.value });
+					toast.success("Booking created successfully!");
+					router.push({ path: "/" });
+				} catch (error) {
+					console.log(error);
 				}
+			} else {
+				toast.warning("Please fill all fields!");
 			}
-			axios.post("https://carrental-vue.onrender.com/addUnregisteredUser", { client: userBooking.value }).then((res) => {
-				toast(res.data);
+		} else {
+			try {
+				await createBooking({ booking: userBooking.value.booking, email: user.email });
+				toast.success("Booking created successfully!");
 				router.push({ path: "/" });
-			});
+			} catch (error) {
+				console.log(error);
+			}
 		}
 	}
 </script>

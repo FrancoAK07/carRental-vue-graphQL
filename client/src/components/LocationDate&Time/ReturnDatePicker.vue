@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-	import { ref, onMounted } from "vue";
+	import { ref } from "vue";
 
 	let selectedDate = new Date();
 	let year = selectedDate.getFullYear();

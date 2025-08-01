@@ -17,44 +17,57 @@
 </template>
 
 <script setup>
-	import axios from "axios";
 	import { onBeforeRouteLeave } from "vue-router";
 	import { useToast } from "vue-toastification";
+	import { useLazyQuery } from "@vue/apollo-composable";
+	import { GET_USER } from "@/api/queries.js";
 
 	const toast = useToast();
 	const bookingEmail = defineModel("bookingEmail");
-	let users;
-	let unregisteredUsers;
+	let user;
 
-	users = await axios.get("https://carrental-vue.onrender.com/getUsers");
-	unregisteredUsers = await axios.get("https://carrental-vue.onrender.com/getUnregisteredUsers");
+	const { load: lazyQuery, refetch } = useLazyQuery();
 
-	onBeforeRouteLeave((to, from, next) => {
+	onBeforeRouteLeave(async (to, _, next) => {
 		if (to.path === "/bookings") {
-			if (bookingEmail.value) {
-				if (bookingEmail.value.includes("@")) {
-					for (let user of users.data) {
-						if (user.email === bookingEmail.value) {
-							toast("you already have an account! Log in and check your bookings");
+			if (bookingEmail.value && bookingEmail.value.includes("@")) {
+				try {
+					const response = await lazyQuery(GET_USER, { email: bookingEmail.value });
+					if (response !== false) {
+						if (response.user) {
+							user = response.user;
+							if (user.registered) {
+								toast("you already have an account! Log in and check your bookings");
+								next(false);
+							} else {
+								sessionStorage.setItem("bookingEmail", bookingEmail.value);
+								next(true);
+							}
+						} else {
+							toast.warning("User not found");
 							next(false);
-							return;
+						}
+					} else {
+						const secondCall = await refetch({ email: bookingEmail.value });
+						if (secondCall.data.user) {
+							user = secondCall.data.user;
+							if (user.registered) {
+								toast("you already have an account! Log in and check your bookings");
+								next(false);
+							} else {
+								sessionStorage.setItem("bookingEmail", bookingEmail.value);
+								next(true);
+							}
+						} else {
+							toast.warning("User not found");
+							next(false);
 						}
 					}
-					for (let user of unregisteredUsers.data) {
-						if (user.email === bookingEmail.value) {
-							sessionStorage.setItem("bookingEmail", bookingEmail.value);
-							next(true);
-							return;
-						}
-					}
-					toast.error("user not found");
-					next(false);
-				} else {
-					toast.warning("enter a valid email");
+				} catch (error) {
 					next(false);
 				}
 			} else {
-				toast.error("enter your email");
+				toast.warning("Enter a valid email");
 				next(false);
 			}
 		} else {

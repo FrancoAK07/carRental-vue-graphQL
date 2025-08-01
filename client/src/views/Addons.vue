@@ -23,7 +23,7 @@
 				<h1 class="w-auto m-0">Total: ${{ totalPrice.toFixed(2) }}</h1>
 			</div>
 			<div class="col-12 col-md d-flex justify-content-center">
-				<router-link :to="{ path: checkoutPath }" class="btn btn-primary w-auto my-auto" @click="saveToSessionStorage()">
+				<router-link :to="{ path: '/checkout' }" class="btn btn-primary w-auto my-auto" @click="saveToSessionStorage()">
 					Continue
 				</router-link>
 			</div>
@@ -33,7 +33,9 @@
 
 <script setup>
 	import { ref, computed, onMounted } from "vue";
-	import axios from "axios";
+	import { useQuery } from "@vue/apollo-composable";
+	import { GET_ADDONS } from "@/api/queries";
+	import { removeTypename } from "@/utils/helpers.js";
 
 	//get booking info from sessionStorage
 	const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo"));
@@ -42,23 +44,17 @@
 	let details = [false, false];
 	const linkRef = ref(null);
 	const checkedRef = ref(null);
-	let addonsData;
+	const addons = ref([]);
 	let selectedAddons = [];
 	let userIsLogged = JSON.parse(sessionStorage.getItem("user"));
 
-	addonsData = await axios.get("https://carrental-vue.onrender.com/addons");
+	const { onResult, onError } = useQuery(GET_ADDONS);
 
-	const addons = addonsData.data;
-
-	//handle next route path
-	const checkoutPath = computed(() => {
-		if (userIsLogged) {
-			return "/usercheckout";
-		} else {
-			return "/checkout";
+	onResult((response) => {
+		if (response.data) {
+			addons.value = removeTypename(response.data.addons);
 		}
 	});
-	//--
 
 	let pickupDate = new Date(bookingInfo.pickupDate);
 	let returnDate = new Date(bookingInfo.returnDate);
