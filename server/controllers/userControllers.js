@@ -53,10 +53,18 @@ export const loginUser = async (email, password) => {
 };
 
 export const deleteBooking = async (email, bookingId) => {
-	const response = await User.updateOne({ email: email }, { $pull: { bookings: { _id: bookingId } } });
-	if (response.modifiedCount) {
-		return "Deleted successfully";
-	} else {
+	// await new Promise((resolve) => {
+	// 	setTimeout(resolve, 3000);
+	// });
+	try {
+		const response = await User.updateOne({ email: email }, { $pull: { bookings: { _id: bookingId } } });
+		if (response.modifiedCount) {
+			return "Deleted successfully";
+		} else {
+			return new GraphQLError("Error deleting booking");
+		}
+	} catch (error) {
+		console.log(error);
 		return new GraphQLError("Error deleting booking");
 	}
 };
