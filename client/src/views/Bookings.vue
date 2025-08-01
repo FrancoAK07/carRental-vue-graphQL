@@ -96,6 +96,7 @@
 	let showDetails = ref([]);
 	const userBookings = ref([]);
 	const deletedBookingId = ref("");
+	const userId = ref();
 
 	const { loading, onResult, onError: queryError } = useQuery(GET_USER, { email: email });
 
@@ -106,19 +107,29 @@
 				id: deletedBookingId.value,
 			},
 		},
-		update(cache) {
-			const userData = cache.readQuery({ query: GET_USER, variables: { email: email } });
-			const updatedBookings = userData.user.bookings.filter((booking) => {
-				return booking._id !== deletedBookingId.value;
-			});
+		// update(cache) {
+		// 	const userData = cache.readQuery({ query: GET_USER, variables: { email: email } });
+		// 	const updatedBookings = userData.user.bookings.filter((booking) => {
+		// 		return booking._id !== deletedBookingId.value;
+		// 	});
 
-			cache.writeQuery({
-				query: GET_USER,
-				variables: { email: email },
-				data: {
-					user: {
-						...userData.user,
-						bookings: updatedBookings,
+		// 	cache.writeQuery({
+		// 		query: GET_USER,
+		// 		variables: { email: email },
+		// 		data: {
+		// 			user: {
+		// 				...userData.user,
+		// 				bookings: updatedBookings,
+		// 			},
+		// 		},
+		// 	});
+		// },
+		update(cache) {
+			cache.modify({
+				id: cache.identify({ _id: userId.value, __typename: "User" }),
+				fields: {
+					bookings(existingBookings, { readField }) {
+						return existingBookings.filter((booking) => deletedBookingId.value !== readField("_id", booking));
 					},
 				},
 			});
@@ -127,6 +138,7 @@
 
 	onResult((response) => {
 		if (!loading.value) {
+			userId.value = response.data.user._id;
 			userBookings.value = [...response.data.user.bookings];
 		}
 	});
