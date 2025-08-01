@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+import { config } from "dotenv";
 
-mongoose.connect("mongodb+srv://francorivo7:2n7cPLomBalvt3G2@cluster0.wcvrqfq.mongodb.net/car_rental_aiven");
+config();
+mongoose.connect(process.env.MONGODB_STRING);
 
 export default mongoose.connection;
