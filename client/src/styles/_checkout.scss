@@ -1,0 +1,17 @@
+.price-details {
+	top: 10px !important;
+	right: 0 !important;
+	z-index: 1000 !important;
+	width: auto !important;
+}
+
+@media (max-width: 600px) {
+	.price-details {
+		width: 90% !important;
+		z-index: 1000 !important;
+		position: absolute;
+		top: 14% !important;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+}

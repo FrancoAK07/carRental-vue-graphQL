@@ -69,6 +69,23 @@ input[type=date]:focus, input[type=time]:focus, input[type=text]:focus {
   height: 20px !important;
 }
 
+.price-details {
+  top: 10px !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  width: auto !important;
+}
+
+@media (max-width: 600px) {
+  .price-details {
+    width: 90% !important;
+    z-index: 1000 !important;
+    position: absolute;
+    top: 14% !important;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
 .selected {
   background-color: rgb(13, 110, 253);
 }
@@ -156,6 +173,11 @@ input[type=date]:focus, input[type=time]:focus, input[type=text]:focus {
   cursor: pointer;
 }
 
+@media (min-width: 601px) {
+  .booking-card {
+    width: 80% !important;
+  }
+}
 .logout-btn {
   bottom: -65px;
   z-index: 1;

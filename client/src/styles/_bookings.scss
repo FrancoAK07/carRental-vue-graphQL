@@ -1,24 +1,30 @@
 .border-hover {
-    border: 3px solid transparent;
-    transition:  300ms ease;
+	border: 3px solid transparent;
+	transition: 300ms ease;
 }
 
 .border-hover:hover {
-    border: 3px solid rgb(15, 92, 224);
-    transition: ease-in-out 500ms;
+	border: 3px solid rgb(15, 92, 224);
+	transition: ease-in-out 500ms;
 }
 
 .delete-icon {
-    visibility: hidden;
-    cursor: pointer;
-    top: 8px;
-    right: 8px;
+	visibility: hidden;
+	cursor: pointer;
+	top: 8px;
+	right: 8px;
 }
 
 .border-hover:hover .delete-icon {
-    visibility: visible;
+	visibility: visible;
 }
 
 .details-link {
-    cursor: pointer;
+	cursor: pointer;
+}
+
+@media (min-width: 601px) {
+	.booking-card {
+		width: 80% !important;
+	}
 }

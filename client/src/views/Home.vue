@@ -51,7 +51,7 @@
 						<div class="row bg-primary rounded-top align-content-center w-100 mx-auto">
 							<h5 class="m-0 p-1 text-white">Cars</h5>
 						</div>
-						<p>compact and fuel-efficient</p>
+						<p>Compact and fuel-efficient</p>
 						<img class="img-fluid" src="../assets/images/cars.png" alt="" />
 					</div>
 				</div>
@@ -60,7 +60,7 @@
 						<div class="row bg-primary rounded-top align-content-center w-100 mx-auto">
 							<h5 class="m-0 p-1 text-white">Electric</h5>
 						</div>
-						<p>full electric and hybrids</p>
+						<p>Full electric and hybrids</p>
 						<img class="img-fluid" src="../assets/images/electric.png" alt="" />
 					</div>
 				</div>
@@ -69,7 +69,7 @@
 						<div class="row bg-primary rounded-top align-content-center w-100 mx-auto">
 							<h5 class="m-0 p-1 text-white">SUVs</h5>
 						</div>
-						<p>ideal for family travels</p>
+						<p>Ideal for family travels</p>
 						<img class="img-fluid" src="../assets/images/suv.png" alt="" />
 					</div>
 				</div>
@@ -78,7 +78,7 @@
 						<div class="row bg-primary rounded-top align-content-center w-100 mx-auto">
 							<h5 class="m-0 p-1 text-white">Luxury</h5>
 						</div>
-						<p>travel in style</p>
+						<p>Travel in style</p>
 						<img class="img-fluid" src="../assets/images/luxury.png" alt="" />
 					</div>
 				</div>

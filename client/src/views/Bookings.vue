@@ -10,12 +10,12 @@
 					You dont have any active bookings
 				</h1>
 			</div>
-			<div v-for="(car, index) in userBookings" class="border-hover rounded p-1 w-75 mx-auto">
+			<div v-for="(car, index) in userBookings" class="booking-card border-hover rounded p-1 mx-auto">
 				<div class="row bg-dark rounded w-100 mx-auto position-relative p-2">
 					<div class="delete-icon position-absolute text-white w-auto p-0 rounded-5 d-flex z-1" @click="deleteBooking(car._id)">
 						<img class="bg-secondary rounded-5" src="../assets/images/trashcan2.png" alt="" />
 					</div>
-					<div class="col-12 col-md-6 position-relative my-auto">
+					<div class="col-12 col-md-6 position-relative my-auto text-center">
 						<img class="img-fluid" :src="car.carImg" alt="" />
 						<div class="position-absolute top-0 text-white">
 							<p class="m-0">Model: {{ car.carModel }}</p>
@@ -23,7 +23,7 @@
 						</div>
 					</div>
 					<div class="col-12 col-md-6 text-white m-auto p-0">
-						<div class="row w-100">
+						<div class="row w-100 mx-auto">
 							<h5>Pickup</h5>
 							<div class="ms-2 ms-md-2 d-flex p-2">
 								<img class="me-2" src="../assets/images/house2.png" alt="" />
@@ -38,7 +38,7 @@
 								<p class="m-0">Time: {{ car.pickupTime }}</p>
 							</div>
 						</div>
-						<div class="row mt-3 w-100">
+						<div class="row mt-3 w-100 mx-auto">
 							<h5>Return</h5>
 							<div class="ms-2 ms-md-2 d-flex p-2">
 								<img class="me-2" src="../assets/images/house2.png" alt="" />

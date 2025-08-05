@@ -3,7 +3,8 @@
 		<div class="row text-center my-2 align-content-center p-2">
 			<h1 class="fw-bold text-nowrap m-0 p-0">Would you like any add-ons?</h1>
 		</div>
-		<div class="col row-gap-2 d-grid">
+		<div v-if="loading"><p class="text-center fs-3">Loading addons...</p></div>
+		<div v-else class="col row-gap-2 d-grid">
 			<div class="row add-on border border-2 rounded p-3 w-75 m-auto" v-for="(addon, index) in addons">
 				<div class="col fw-bold">
 					<div class="row">{{ addon.name }}</div>
@@ -48,7 +49,7 @@
 	let selectedAddons = [];
 	let userIsLogged = JSON.parse(sessionStorage.getItem("user"));
 
-	const { onResult, onError } = useQuery(GET_ADDONS);
+	const { onResult, loading } = useQuery(GET_ADDONS);
 
 	onResult((response) => {
 		if (response.data) {

@@ -19,11 +19,16 @@
 						</div>
 						<div
 							ref="details"
-							class="price-details col text-light bg-dark w-auto rounded text-start position-absolute top-50 start-50 translate-middle p-0"
+							class="price-details col text-light bg-dark rounded text-start position-absolute p-0 text-center"
 							v-if="showDetails">
-							<div class="row px-3 py-3 m-0 text-center"><h1 class="m-0 p-0">Price details</h1></div>
+							<div class="row px-3 py-3 m-0">
+								<div class="col d-flex justify-content-center">
+									<h1 class="m-0 p-0">Price details</h1>
+									<button class="btn btn-danger w-auto ms-5 my-auto" @click="showDetails = false">X</button>
+								</div>
+							</div>
 							<div class="row px-3 pb-1 text-nowrap w-100 mx-auto">
-								<div class="col me-5 p-0">Daily/{{ bookingInfo.car.pricePerDay }} x {{ differenceInDays }} Rental days</div>
+								<div class="col me-5 p-0">Daily/${{ bookingInfo.car.pricePerDay }} x {{ differenceInDays }} Rental days</div>
 								<div class="col text-end p-0">${{ bookingInfo.totalPrice }}</div>
 							</div>
 							<div class="row px-3 pb-1 text-nowrap w-100 mx-auto" v-for="addon of bookingInfo.selectedAddons">
@@ -41,9 +46,9 @@
 			</div>
 		</div>
 		<div class="border-bottom"></div>
-		<div class="container mt-4">
+		<div class="container mt-4 mb-4">
 			<div class="row justify-content-center">
-				<div v-if="!user" class="col-12 col-md-7 px-5 d-flex flex-column mb-3">
+				<div v-if="!user" class="col-10 col-md-8 px-md-5 px-0 d-flex flex-column mb-3">
 					<h2>Enter your info</h2>
 					<div class="row w-100 mx-auto">
 						<div class="col p-1">
@@ -102,10 +107,10 @@
 						</div>
 					</div>
 				</div>
-				<div v-else class="col-12 col-md-7 px-5 d-flex flex-column mb-3">
+				<div v-else class="col-10 col-md-8 px-0 px-md-5 d-flex flex-column mb-3">
 					<h2>Enter your info</h2>
 					<div class="row w-100 mx-auto">
-						<div class="col-4 p-1">
+						<div class="col p-1">
 							<label class="fw-bold" for="number">Country</label>
 							<select
 								class="d-block w-100 rounded p-1"
@@ -141,15 +146,15 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-10 col-md-5 bg-dark text-light p-0 rounded-3">
+				<div class="col-10 col-md-5 bg-dark text-light p-0 p-md-3 rounded-3">
 					<div class="row w-100 m-auto">
-						<div class="col p-3">
-							<img class="img-fluid w-100 bg-dark-subtle rounded-3" :src="bookingInfo.car.img" alt="" />
-						</div>
-						<div class="col p-3">
-							<div class="row m-auto">Brand: {{ bookingInfo.car.brand }}</div>
-							<div class="row m-auto">Model: {{ bookingInfo.car.model }}</div>
-							<div class="row m-auto">{{ differenceInDays }} rental days</div>
+						<div class="col p-3 position-relative">
+							<img class="img-fluid w-100 rounded-3" :src="bookingInfo.car.img" alt="" />
+							<div class="position-absolute top-0 text-white">
+								<div class="row m-auto">Brand: {{ bookingInfo.car.brand }}</div>
+								<div class="row m-auto">Model: {{ bookingInfo.car.model }}</div>
+								<div class="row m-auto">{{ differenceInDays }} rental days</div>
+							</div>
 						</div>
 					</div>
 					<div class="row px-3 mx-auto">
@@ -178,6 +183,7 @@
 				</div>
 				<div class="row justify-content-center mt-3 mb-3 mb-md-0">
 					<button
+						v-if="!bookingLoading && !createUserLoading"
 						class="btn btn-primary w-50"
 						@click="
 							{
@@ -187,6 +193,10 @@
 							}
 						">
 						Book
+					</button>
+					<button v-else class="btn btn-primary w-50" type="button" disabled>
+						<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+						<span class="visually-hidden" role="status">Loading...</span>
 					</button>
 				</div>
 			</div>
@@ -200,7 +210,7 @@
 	import { useToast } from "vue-toastification";
 	import { useMutation, useLazyQuery } from "@vue/apollo-composable";
 	import { CREATE_BOOKING, CREATE_USER } from "@/api/mutations";
-	import { GET_USER, GET_USER_BOOKINGS } from "@/api/queries";
+	import { GET_USER } from "@/api/queries";
 
 	//get booking info from sessionStorage
 	const bookingInfo = JSON.parse(sessionStorage.getItem("bookingInfo"));
@@ -229,7 +239,7 @@
 
 	const { load: getUser } = useLazyQuery();
 
-	const { mutate: createBooking } = useMutation(CREATE_BOOKING, {
+	const { mutate: createBooking, loading: bookingLoading } = useMutation(CREATE_BOOKING, {
 		update(cache, { data }) {
 			const newBooking = data.createBooking;
 			const userData = cache.readQuery({ query: GET_USER, variables: { email: user.email } });
@@ -248,7 +258,7 @@
 		},
 	});
 
-	const { mutate: createUser } = useMutation(CREATE_USER, {
+	const { mutate: createUser, loading: createUserLoading } = useMutation(CREATE_USER, {
 		update(cache, { data }) {
 			const newUser = data.createUser;
 			if (newUser) {
