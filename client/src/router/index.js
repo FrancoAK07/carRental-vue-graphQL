@@ -15,7 +15,6 @@ const routes = [
 	{ path: "/checkout", name: "checkout", component: Checkout, props: true },
 	{ path: "/fleet", name: "fleet", component: Fleet, props: true },
 	{ path: "/bookings", name: "bookings", component: Bookings, props: true },
-	{ path: "/usercheckout", name: "usercheckout", component: UserCheckout, props: true },
 	{ path: "/emailbooking", name: "emailbooking", component: EmailBooking, props: true },
 ];
 
