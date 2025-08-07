@@ -32,7 +32,6 @@ export const GET_USER = gql`
 		user(email: $email) {
 			_id
 			email
-			registered
 			bookings {
 				_id
 				totalPrice
@@ -45,7 +44,6 @@ export const GET_USER = gql`
 				pickupTime
 				pickupLocation
 				pickupDate
-				country
 				carModel
 				carImg
 				carBrand
@@ -76,7 +74,6 @@ export const GET_USER_BOOKINGS = gql`
 		user(email: $email) {
 			_id
 			email
-			registered
 			bookings {
 				_id
 				totalPrice
@@ -89,7 +86,6 @@ export const GET_USER_BOOKINGS = gql`
 				pickupTime
 				pickupLocation
 				pickupDate
-				country
 				carModel
 				carImg
 				carBrand

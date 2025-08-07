@@ -184,8 +184,7 @@
 </template>
 
 <script setup>
-	import axios from "axios";
-	import { ref, onMounted } from "vue";
+	import { ref } from "vue";
 	import { useQuery } from "@vue/apollo-composable";
 	import { GET_ALL_CARS } from "@/api/queries";
 

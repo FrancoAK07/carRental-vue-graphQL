@@ -3,7 +3,12 @@
 		<div class="row m-auto d-none d-sm-flex">
 			<router-link :to="{ path: '/' }" class="col text-decoration-none">Home</router-link>
 			<router-link :to="{ path: '/fleet' }" class="col text-decoration-none">Fleet</router-link>
-			<router-link :to="{ path: '/emailbooking' }" class="col text-decoration-none my-auto">Bookings</router-link>
+			<router-link
+				:to="{ path: userLogged ? '/bookings' : '#' }"
+				class="col text-decoration-none my-auto"
+				@click.prevent="handleBookingsRoute"
+				>Bookings</router-link
+			>
 		</div>
 		<div class="row position-absolute end-0 me-2 d-none d-sm-flex">
 			<div class="col" ref="loginLink" v-show="route.path === '/'">
@@ -51,10 +56,12 @@
 
 <script setup>
 	import { ref, onMounted, watch } from "vue";
-	import { useRoute } from "vue-router";
+	import { useRoute, useRouter } from "vue-router";
+	import { useToast } from "vue-toastification";
 
 	const loginLink = ref(null);
 	const registerLink = ref(null);
+	const userLogged = sessionStorage.getItem("userLogged");
 	const emit = defineEmits([
 		"showLoginForm",
 		"loginLink",
@@ -68,6 +75,8 @@
 	const loginLinkHamburger = ref(null);
 	const registerLinkHamburger = ref(null);
 	const hamburgerLinks = ref(null);
+	const toast = useToast();
+	const router = useRouter();
 
 	onMounted(() => {
 		emit("loginLink", loginLink);
@@ -111,4 +120,10 @@
 			}
 		}
 	});
+
+	const handleBookingsRoute = () => {
+		if (!userLogged) {
+			toast.warning("Log in to see your bookings");
+		}
+	};
 </script>

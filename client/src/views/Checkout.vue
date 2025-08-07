@@ -19,7 +19,7 @@
 						</div>
 						<div
 							ref="details"
-							class="price-details col text-light bg-dark rounded text-start position-absolute p-0 text-center"
+							class="price-details col text-light bg-dark rounded text-start position-absolute p-0 text-center border border-light"
 							v-if="showDetails">
 							<div class="row px-3 py-3 m-0">
 								<div class="col d-flex justify-content-center">
@@ -71,78 +71,9 @@
 						</div>
 					</div>
 					<div class="row w-100 mx-auto">
-						<div class="col-4 p-1">
-							<label class="fw-bold" for="number">Country</label>
-							<select
-								class="d-block w-100 rounded p-1"
-								name="country"
-								id="country"
-								ref="country"
-								@change="
-									{
-										{
-											userBooking.booking.country = country;
-										}
-									}
-								">
-								<option value="venezuela">Venezuela</option>
-								<option value="USA">USA</option>
-								<option value="italy">Italy</option>
-							</select>
-						</div>
 						<div class="col p-1">
 							<label class="fw-bold" for="number">Phone Number</label>
-							<input
-								class="d-block w-100 rounded p-1 border-1"
-								type="text"
-								name="number"
-								v-model="phone"
-								@change="
-									{
-										{
-											userBooking.phone = phone;
-										}
-									}
-								" />
-						</div>
-					</div>
-				</div>
-				<div v-else class="col-10 col-md-8 px-0 px-md-5 d-flex flex-column mb-3">
-					<h2>Enter your info</h2>
-					<div class="row w-100 mx-auto">
-						<div class="col p-1">
-							<label class="fw-bold" for="number">Country</label>
-							<select
-								class="d-block w-100 rounded p-1"
-								name="country"
-								id="country"
-								ref="country"
-								@change="
-									{
-										{
-											userBooking.booking.country = country;
-										}
-									}
-								">
-								<option value="venezuela">Venezuela</option>
-								<option value="USA">USA</option>
-								<option value="italy">Italy</option>
-							</select>
-						</div>
-						<div class="col p-1">
-							<label class="fw-bold" for="number">Phone Number</label>
-							<input
-								class="d-block w-100 rounded p-1 border-1"
-								type="text"
-								name="number"
-								v-model="phone"
-								@change="
-									{
-										{
-											userBooking.phone = phone;
-										}
-									}
-								" />
+							<input class="d-block w-100 rounded p-1 border-1" type="text" name="number" v-model="phone" />
 						</div>
 					</div>
 				</div>
@@ -181,24 +112,24 @@
 						</p>
 					</div>
 				</div>
-				<div class="row justify-content-center mt-3 mb-3 mb-md-0">
-					<button
-						v-if="!bookingLoading && !createUserLoading"
-						class="btn btn-primary w-50"
-						@click="
+			</div>
+			<div class="row d-flex justify-content-center mt-3 mb-3 mb-md-0">
+				<button
+					v-if="!bookingLoading && !createUserLoading"
+					class="col-10 col-md-5 btn btn-primary"
+					@click="
+						{
 							{
-								{
-									saveBooking();
-								}
+								saveBooking();
 							}
-						">
-						Book
-					</button>
-					<button v-else class="btn btn-primary w-50" type="button" disabled>
-						<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-						<span class="visually-hidden" role="status">Loading...</span>
-					</button>
-				</div>
+						}
+					">
+					Book
+				</button>
+				<button v-else class="col-10 col-md-5 btn btn-primary" type="button" disabled>
+					<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+					<span class="visually-hidden" role="status">Loading...</span>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -233,7 +164,6 @@
 	let lastName = defineModel("lastName");
 	let email = defineModel("email");
 	let password = defineModel("password");
-	let country = ref();
 	let phone = defineModel("phone");
 	const newUser = ref();
 
@@ -297,8 +227,6 @@
 
 	let userBooking = computed(() => ({
 		booking: {
-			country: country.value.value,
-			phone: phone.value,
 			carImg: bookingInfo.car.img,
 			carBrand: bookingInfo.car.brand,
 			carModel: bookingInfo.car.model,
@@ -325,9 +253,9 @@
 			newUser.value = {
 				firstName: firstName.value,
 				lastName: lastName.value,
+				phone: phone.value,
 				email: email.value,
 				password: password.value,
-				registered: false,
 				bookings: [userBooking.value.booking],
 			};
 			if (!Object.values(newUser.value).some((value) => value === undefined)) {

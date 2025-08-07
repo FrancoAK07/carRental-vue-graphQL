@@ -6,13 +6,11 @@ export const CREATE_USER = gql`
 			_id
 			firstName
 			lastName
+			phone
 			email
 			password
-			registered
 			bookings {
 				_id
-				country
-				phone
 				carImg
 				carBrand
 				carModel
@@ -43,8 +41,8 @@ export const LOGIN_USER = gql`
 		loginUser(email: $email, password: $password) {
 			firstName
 			lastName
+			phone
 			email
-			registered
 		}
 	}
 `;
@@ -59,8 +57,6 @@ export const CREATE_BOOKING = gql`
 	mutation Mutation($booking: BookingInput!, $email: String!) {
 		createBooking(booking: $booking, email: $email) {
 			_id
-			country
-			phone
 			carImg
 			carBrand
 			carModel
