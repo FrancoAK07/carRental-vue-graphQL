@@ -3,25 +3,15 @@ export const typeDefs = `#graphql
     _id: ID!
     firstName: String!
     lastName: String!
+    phone: String!
     email: String!
     password: String!
-    registered: Boolean!
     bookings: [Booking]!
   }
 
-  type UnregisteredUser {
-    _id: ID!
-    firstName: String!
-    lastName: String!
-    email: String!
-    phone: Int!
-    bookings: [Booking]
-  }
 
   type Booking {
     _id: ID!
-    country: String
-    phone: String
     carImg: String
     carBrand: String
     carModel: String
@@ -70,8 +60,6 @@ export const typeDefs = `#graphql
   }
 
   input BookingInput {
-    country: String
-    phone: String
     carImg: String
     carBrand: String
     carModel: String
@@ -91,9 +79,9 @@ export const typeDefs = `#graphql
   input UserInput {
     firstName: String!
     lastName: String!
+    phone: String!
     email: String!
     password: String!
-    registered: Boolean!
     bookings: [BookingInput!] = []
   }
 
@@ -101,8 +89,6 @@ export const typeDefs = `#graphql
   type Query {
     user(email: String!): User
     users: [User!]
-    unregisteredUser(email: String!): UnregisteredUser!
-    unregisteredUsers: [UnregisteredUser!]
     cars: [Car!]
     addons: [Addon!]
   }

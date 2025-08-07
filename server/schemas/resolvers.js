@@ -2,8 +2,6 @@ import {
 	getUser,
 	getUsers,
 	getCars,
-	getUnregisteredUsers,
-	getUnregisteredUser,
 	getAddons,
 	createBooking,
 	createUser,
@@ -21,12 +19,6 @@ const resolvers = {
 		},
 		user: async (_, args) => {
 			return await getUser(args.email);
-		},
-		unregisteredUsers: async () => {
-			return await getUnregisteredUsers();
-		},
-		unregisteredUser: async (_, args) => {
-			return await getUnregisteredUser(args.email);
 		},
 		addons: async () => {
 			return await getAddons();

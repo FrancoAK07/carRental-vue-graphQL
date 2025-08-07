@@ -18,6 +18,7 @@ export const createUser = async (user) => {
 	const newUser = new User({
 		firstName: user.firstName,
 		lastName: user.lastName,
+		phone: user.phone,
 		email: user.email,
 		password: user.password,
 		registered: user.registered,

@@ -9,15 +9,14 @@ const userSchema = new Schema(
 		lastName: {
 			type: String,
 		},
+		phone: {
+			type: String,
+		},
 		email: {
 			type: String,
 		},
 		password: {
 			type: String,
-		},
-		registered: {
-			type: Boolean,
-			required: true,
 		},
 		bookings: {
 			type: [
@@ -25,8 +24,6 @@ const userSchema = new Schema(
 					carImg: String,
 					carBrand: String,
 					carModel: String,
-					country: String,
-					phone: String,
 					pickupLocation: String,
 					returnLocation: String,
 					pickupDate: String,
