@@ -5,7 +5,6 @@ import Addons from "../views/Addons.vue";
 import Checkout from "../views/Checkout.vue";
 import Fleet from "../views/Fleet.vue";
 import Bookings from "../views/Bookings.vue";
-import UserCheckout from "../views/UserCheckout.vue";
 import EmailBooking from "../views/EmailBooking.vue";
 
 const routes = [
